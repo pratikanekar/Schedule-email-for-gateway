@@ -18,7 +18,7 @@ def send_mail():
 
     # Create the email message
     subject = 'All Gateway Analysis Data'
-    message_body = 'Respected Sir/Madam, \n\nThis mail for testing purpose please ignore this mail..... \n\nI hope this email finds you well. I am writing to inform you that I have successfully completed the analysis of the Gateway data, as requested. I have attached the Excel file containing the results of the analysis to this email for your review and reference. \n\nThis is system generated mail please do not replay..! \n\nThanks and Regards \nPratik Anekar'
+    message_body = 'Respected Sir/Madam, \n\nI hope this email finds you well. I am writing to inform you that I have successfully completed the analysis of the Gateway data, as requested. I have attached the Excel file containing the results of the analysis to this email for your review and reference. \n\nThis is system generated mail please do not replay..! \n\nThanks and Regards \nPratik Anekar'
     message = MIMEMultipart()
     message['From'] = gmail_user
     message['To'] = ', '.join(recipients)  # Join recipients with a comma and space
