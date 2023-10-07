@@ -146,17 +146,21 @@ def analysis():
                             gw_process_uptime = str(datetime.timedelta(seconds=process_uptime))
                             gw_version = get_gw_status_details.json().get('version_no')
 
-                            get_data = get(f'http://{ip_port}/influx/transactions')
-                            # Here we get temp_db txn count
-                            if get_data.status_code == 200:
-                                json_list = get_data.json()
-                                # local_count = sum(json_list['data'].values())
-                                temp_count = sum(json_list['temp_data'].values())
-                                site_name_res = get(f"http://{ip_port}/gateway_detail")
-                                # Here we get gw_details
-                                if site_name_res.status_code == 200:
-                                    panel_name = site_name_res.json().get('panel_name')
-                                    panel_number = site_name_res.json().get('a_panel_no')
+                            site_name_res = get(f"http://{ip_port}/gateway_detail")
+                            # Here we get gw_details
+                            if site_name_res.status_code == 200:
+                                panel_name = site_name_res.json().get('panel_name')
+                                panel_number = site_name_res.json().get('a_panel_no')
+
+                                get_data = get(f'http://{ip_port}/influx/transactions')
+                                # Here we get temp_db txn count
+                                if get_data.status_code == 200:
+                                    json_list = get_data.json()
+                                    # local_count = sum(json_list['data'].values())
+                                    rule_code = json_list['temp_data']['rule_code']
+                                    if rule_code != 0:
+                                        temp_count = sum(json_list['temp_data'].values()) - rule_code
+
                                 final_mes_dict = find_measuremt_dates(ip, panel_number)
                                 temp_dict.update(
                                     {"ip": ip, "port": port, "panel_name": panel_name, "panel_number": panel_number,
@@ -180,6 +184,18 @@ def analysis():
                          "gateway_version": gw_version})
                     temp_dict.update(final_mes_dict)
                     temp_data.append(temp_dict)
+                except KeyError as r_code:
+                    # print(r_code)
+                    temp_count = sum(json_list['temp_data'].values())
+                    final_mes_dict = find_measuremt_dates(ip, panel_number)
+                    temp_dict.update(
+                        {"ip": ip, "port": port, "panel_name": panel_name, "panel_number": panel_number,
+                         "temp_db_count": temp_count, "cpu_usage": cpu_usage, "gateway_uptime": gw_uptime,
+                         "process_uptime": gw_process_uptime, "ping_status": "True",
+                         "gateway_version": gw_version})
+                    temp_dict.update(final_mes_dict)
+                    temp_data.append(temp_dict)
+
                 except Exception as e:
                     # print(e)
                     final_mes_dict = find_measuremt_dates(ip, panel_number)
