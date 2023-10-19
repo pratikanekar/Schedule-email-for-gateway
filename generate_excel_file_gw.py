@@ -9,7 +9,7 @@ from datetime import datetime
 analysis_file_name = "gw_analysis_info"
 now = datetime.now().strftime("%Y-%m-%d")
 analysis_header_csv = ["ip", "port", "ping_status", "panel_name", "panel_number", "temp_db_count", "cpu_usage",
-                       "gateway_uptime",
+                       "disk_usage", "memory_usage", "gateway_uptime",
                        "process_uptime", "gateway_version", 'current_first_date', 'current_last_date',
                        'current_cloud_date', 'energy_first_date', 'energy_last_date', 'energy_cloud_date',
                        'event_first_date', 'event_last_date', 'event_cloud_date', 'frequency_first_date',
@@ -122,9 +122,11 @@ def analysis():
                 temp_dict = {}
                 ip = lines['ip']
                 port = lines['port']
-                panel_name = "Not Available"
-                panel_number = "Not Available"
+                panel_name = lines['panel_name']
+                panel_number = lines['panel_number']
                 cpu_usage = "Not Available"
+                disk_usage = "Not Available"
+                memory_usage = "Not Available"
                 gw_uptime = "Not Available"
                 gw_process_uptime = "Not Available"
                 gw_version = "Not Available"
@@ -140,37 +142,33 @@ def analysis():
                         # Here we get gw_status
                         if get_gw_status_details.status_code == 200:
                             cpu_usage = f"{get_gw_status_details.json().get('cpu_usage')}%"
+                            disk_usage = f"{get_gw_status_details.json().get('disk_usage')}%"
+                            memory_usage = f"{get_gw_status_details.json().get('memory_usage')}%"
                             uptime = get_gw_status_details.json().get('uptime')
                             gw_uptime = str(datetime.timedelta(seconds=uptime))
                             process_uptime = get_gw_status_details.json().get('process_uptime')
                             gw_process_uptime = str(datetime.timedelta(seconds=process_uptime))
                             gw_version = get_gw_status_details.json().get('version_no')
 
-                            site_name_res = get(f"http://{ip_port}/gateway_detail")
-                            # Here we get gw_details
-                            if site_name_res.status_code == 200:
-                                panel_name = site_name_res.json().get('panel_name')
-                                panel_number = site_name_res.json().get('a_panel_no')
+                            get_data = get(f'http://{ip_port}/influx/transactions')
+                            # Here we get temp_db txn count
+                            if get_data.status_code == 200:
+                                json_list = get_data.json()
+                                # local_count = sum(json_list['data'].values())
+                                rule_code = json_list['temp_data']['rule_code']
+                                if rule_code != 0:
+                                    temp_count = sum(json_list['temp_data'].values()) - rule_code
 
-                                get_data = get(f'http://{ip_port}/influx/transactions')
-                                # Here we get temp_db txn count
-                                if get_data.status_code == 200:
-                                    json_list = get_data.json()
-                                    # local_count = sum(json_list['data'].values())
-                                    rule_code = json_list['temp_data']['rule_code']
-                                    if rule_code != 0:
-                                        temp_count = sum(json_list['temp_data'].values()) - rule_code
+                            final_mes_dict = find_measuremt_dates(ip, panel_number)
+                            temp_dict.update(
+                                {"ip": ip, "port": port, "panel_name": panel_name, "panel_number": panel_number,
+                                 "temp_db_count": temp_count, "cpu_usage": cpu_usage, "disk_usage": disk_usage,
+                                 "memory_usage": memory_usage, "gateway_uptime": gw_uptime,
+                                 "process_uptime": gw_process_uptime, "ping_status": "True",
+                                 "gateway_version": gw_version})
+                            temp_dict.update(final_mes_dict)
+                            temp_data.append(temp_dict)
 
-                                final_mes_dict = find_measuremt_dates(ip, panel_number)
-                                temp_dict.update(
-                                    {"ip": ip, "port": port, "panel_name": panel_name, "panel_number": panel_number,
-                                     "temp_db_count": temp_count, "cpu_usage": cpu_usage, "gateway_uptime": gw_uptime,
-                                     "process_uptime": gw_process_uptime, "ping_status": "True",
-                                     "gateway_version": gw_version})
-                                temp_dict.update(final_mes_dict)
-                                temp_data.append(temp_dict)
-                            else:
-                                pass
                         else:
                             pass
                     else:
@@ -179,7 +177,8 @@ def analysis():
                     final_mes_dict = find_measuremt_dates(ip, panel_number)
                     temp_dict.update(
                         {"ip": ip, "port": port, "panel_name": panel_name, "panel_number": panel_number,
-                         "temp_db_count": temp_count, "cpu_usage": cpu_usage, "gateway_uptime": gw_uptime,
+                         "temp_db_count": temp_count, "cpu_usage": cpu_usage, "disk_usage": disk_usage,
+                         "memory_usage": memory_usage, "gateway_uptime": gw_uptime,
                          "process_uptime": gw_process_uptime, "ping_status": "False",
                          "gateway_version": gw_version})
                     temp_dict.update(final_mes_dict)
@@ -190,7 +189,8 @@ def analysis():
                     final_mes_dict = find_measuremt_dates(ip, panel_number)
                     temp_dict.update(
                         {"ip": ip, "port": port, "panel_name": panel_name, "panel_number": panel_number,
-                         "temp_db_count": temp_count, "cpu_usage": cpu_usage, "gateway_uptime": gw_uptime,
+                         "temp_db_count": temp_count, "cpu_usage": cpu_usage, "disk_usage": disk_usage,
+                         "memory_usage": memory_usage, "gateway_uptime": gw_uptime,
                          "process_uptime": gw_process_uptime, "ping_status": "True",
                          "gateway_version": gw_version})
                     temp_dict.update(final_mes_dict)
@@ -201,7 +201,8 @@ def analysis():
                     final_mes_dict = find_measuremt_dates(ip, panel_number)
                     temp_dict.update(
                         {"ip": ip, "port": port, "panel_name": panel_name, "panel_number": panel_number,
-                         "temp_db_count": temp_count, "cpu_usage": cpu_usage, "gateway_uptime": gw_uptime,
+                         "temp_db_count": temp_count, "cpu_usage": cpu_usage, "disk_usage": disk_usage,
+                         "memory_usage": memory_usage, "gateway_uptime": gw_uptime,
                          "process_uptime": gw_process_uptime, "ping_status": "False",
                          "gateway_version": gw_version})
                     temp_dict.update(final_mes_dict)

@@ -14,7 +14,7 @@ def send_mail():
 
     # Recipient email address
     # to_email = 'manjusha.d@smart-iam.com'
-    recipients = ['dheeraj.d@smart-iam.com', 'manjusha.d@smart-iam.com', 'techsupport1@smart-iam.com', 'hitesh.c@smartiam.in', 'punecms@smartiam.in']
+    recipients = ['dheeraj.d@smart-iam.com', 'manjusha.d@smart-iam.com', 'techsupport1@smart-iam.com', 'hitesh.c@smartiam.in', 'punecms@smartiam.in', 'cms@smartiam.in', 'nihar.z@smartiam.in']
 
     # Create the email message
     subject = 'All Gateway Analysis Data'

@@ -39,3 +39,65 @@
 2023-10-07 13:24:02.378 | INFO     | generate_excel_file_gw:analysis:300 - File is created at /home/smartiam/PycharmProjects/Schedule-email-for-gateway/download/gw_analysis_info_2023-10-07.xlsx
 2023-10-07 13:25:09.992 | INFO     | generate_excel_file_gw:analysis:117 - File was uploaded successfully Please wait 26.2 minutes while processing data
 2023-10-07 13:40:25.703 | INFO     | generate_excel_file_gw:analysis:300 - File is created at /home/smartiam/PycharmProjects/Schedule-email-for-gateway/download/gw_analysis_info_2023-10-07.xlsx
+2023-10-08 09:00:01.927 | INFO     | generate_excel_file_gw:analysis:117 - File was uploaded successfully Please wait 26.2 minutes while processing data
+2023-10-08 09:14:02.847 | INFO     | generate_excel_file_gw:analysis:300 - File is created at /home/smartiam/PycharmProjects/Schedule-email-for-gateway/download/gw_analysis_info_2023-10-08.xlsx
+2023-10-08 09:14:07.853 | INFO     | email_service:send_mail:11 - Email writing work in progress..!
+2023-10-08 09:16:19.292 | ERROR    | email_service:send_mail:56 - Error:
+2023-10-09 09:00:01.187 | INFO     | generate_excel_file_gw:analysis:117 - File was uploaded successfully Please wait 26.2 minutes while processing data
+2023-10-09 09:13:42.127 | INFO     | generate_excel_file_gw:analysis:300 - File is created at /home/smartiam/PycharmProjects/Schedule-email-for-gateway/download/gw_analysis_info_2023-10-09.xlsx
+2023-10-09 09:13:47.132 | INFO     | email_service:send_mail:11 - Email writing work in progress..!
+2023-10-09 09:15:57.788 | ERROR    | email_service:send_mail:56 - Error:
+2023-10-09 09:46:13.309 | INFO     | email_service:send_mail:11 - Email writing work in progress..!
+2023-10-09 09:46:13.840 | ERROR    | email_service:send_mail:56 - Error:
+2023-10-09 09:46:33.173 | INFO     | email_service:send_mail:11 - Email writing work in progress..!
+2023-10-09 09:46:49.634 | INFO     | email_service:send_mail:50 - Email sent successfully
+2023-10-10 09:00:01.451 | INFO     | generate_excel_file_gw:analysis:117 - File was uploaded successfully Please wait 26.2 minutes while processing data
+2023-10-10 09:12:31.934 | INFO     | generate_excel_file_gw:analysis:300 - File is created at /home/smartiam/PycharmProjects/Schedule-email-for-gateway/download/gw_analysis_info_2023-10-10.xlsx
+2023-10-10 09:12:36.936 | INFO     | email_service:send_mail:11 - Email writing work in progress..!
+2023-10-10 09:12:42.234 | INFO     | email_service:send_mail:50 - Email sent successfully
+2023-10-10 09:49:41.297 | INFO     | generate_excel_file_gw:analysis:117 - File was uploaded successfully Please wait 1.0 minutes while processing data
+2023-10-10 09:50:27.199 | INFO     | generate_excel_file_gw:analysis:293 - File is created at /home/smartiam/PycharmProjects/Schedule-email-for-gateway/download/gw_analysis_info_2023-10-10.xlsx
+2023-10-10 09:52:11.840 | INFO     | generate_excel_file_gw:analysis:117 - File was uploaded successfully Please wait 26.0 minutes while processing data
+2023-10-10 10:04:52.958 | INFO     | generate_excel_file_gw:analysis:293 - File is created at /home/smartiam/PycharmProjects/Schedule-email-for-gateway/download/gw_analysis_info_2023-10-10.xlsx
+2023-10-10 10:04:57.964 | INFO     | email_service:send_mail:11 - Email writing work in progress..!
+2023-10-10 10:05:22.016 | INFO     | email_service:send_mail:50 - Email sent successfully
+2023-10-11 09:00:02.171 | INFO     | generate_excel_file_gw:analysis:117 - File was uploaded successfully Please wait 26.0 minutes while processing data
+2023-10-11 09:12:25.227 | INFO     | generate_excel_file_gw:analysis:293 - File is created at /home/smartiam/PycharmProjects/Schedule-email-for-gateway/download/gw_analysis_info_2023-10-11.xlsx
+2023-10-11 09:12:30.232 | INFO     | email_service:send_mail:11 - Email writing work in progress..!
+2023-10-11 09:12:35.619 | INFO     | email_service:send_mail:50 - Email sent successfully
+2023-10-12 09:00:01.546 | INFO     | generate_excel_file_gw:analysis:117 - File was uploaded successfully Please wait 26.0 minutes while processing data
+2023-10-12 09:11:50.620 | INFO     | generate_excel_file_gw:analysis:293 - File is created at /home/smartiam/PycharmProjects/Schedule-email-for-gateway/download/gw_analysis_info_2023-10-12.xlsx
+2023-10-12 09:11:55.624 | INFO     | email_service:send_mail:11 - Email writing work in progress..!
+2023-10-12 09:11:59.976 | INFO     | email_service:send_mail:50 - Email sent successfully
+2023-10-13 09:00:01.896 | INFO     | generate_excel_file_gw:analysis:117 - File was uploaded successfully Please wait 26.0 minutes while processing data
+2023-10-13 09:11:55.248 | INFO     | generate_excel_file_gw:analysis:293 - File is created at /home/smartiam/PycharmProjects/Schedule-email-for-gateway/download/gw_analysis_info_2023-10-13.xlsx
+2023-10-13 09:12:00.252 | INFO     | email_service:send_mail:11 - Email writing work in progress..!
+2023-10-13 09:12:07.553 | INFO     | email_service:send_mail:50 - Email sent successfully
+2023-10-16 09:42:29.369 | INFO     | generate_excel_file_gw:analysis:117 - File was uploaded successfully Please wait 26.0 minutes while processing data
+2023-10-16 09:56:41.647 | INFO     | generate_excel_file_gw:analysis:293 - File is created at /home/smartiam/PycharmProjects/Schedule-email-for-gateway/download/gw_analysis_info_2023-10-16.xlsx
+2023-10-16 09:56:46.652 | INFO     | email_service:send_mail:11 - Email writing work in progress..!
+2023-10-16 09:56:52.910 | INFO     | email_service:send_mail:50 - Email sent successfully
+2023-10-17 09:00:02.006 | INFO     | generate_excel_file_gw:analysis:117 - File was uploaded successfully Please wait 26.0 minutes while processing data
+2023-10-17 09:45:22.158 | INFO     | generate_excel_file_gw:analysis:117 - File was uploaded successfully Please wait 26.0 minutes while processing data
+2023-10-17 09:58:41.420 | INFO     | generate_excel_file_gw:analysis:293 - File is created at /home/smartiam/PycharmProjects/Schedule-email-for-gateway/download/gw_analysis_info_2023-10-17.xlsx
+2023-10-17 09:58:46.425 | INFO     | email_service:send_mail:11 - Email writing work in progress..!
+2023-10-17 09:58:50.861 | INFO     | email_service:send_mail:50 - Email sent successfully
+2023-10-18 09:00:01.610 | INFO     | generate_excel_file_gw:analysis:117 - File was uploaded successfully Please wait 26.0 minutes while processing data
+2023-10-18 09:14:34.141 | INFO     | generate_excel_file_gw:analysis:293 - File is created at /home/smartiam/PycharmProjects/Schedule-email-for-gateway/download/gw_analysis_info_2023-10-18.xlsx
+2023-10-18 09:14:39.147 | INFO     | email_service:send_mail:11 - Email writing work in progress..!
+2023-10-18 09:14:44.575 | INFO     | email_service:send_mail:50 - Email sent successfully
+2023-10-19 09:30:01.471 | INFO     | generate_excel_file_gw:analysis:117 - File was uploaded successfully Please wait 26.0 minutes while processing data
+2023-10-19 09:41:44.797 | INFO     | generate_excel_file_gw:analysis:293 - File is created at /home/smartiam/PycharmProjects/Schedule-email-for-gateway/download/gw_analysis_info_2023-10-19.xlsx
+2023-10-19 09:41:49.802 | INFO     | email_service:send_mail:11 - Email writing work in progress..!
+2023-10-19 09:41:55.747 | INFO     | email_service:send_mail:50 - Email sent successfully
+2023-10-19 10:42:23.742 | INFO     | generate_excel_file_gw:analysis:117 - File was uploaded successfully Please wait 26.2 minutes while processing data
+2023-10-19 10:49:15.742 | INFO     | generate_excel_file_gw:analysis:118 - File was uploaded successfully Please wait 0.2 minutes while processing data
+2023-10-19 10:49:17.179 | INFO     | generate_excel_file_gw:analysis:302 - File is created at /home/smartiam/PycharmProjects/Schedule-email-for-gateway/download/gw_analysis_info_2023-10-19.xlsx
+2023-10-19 10:50:29.387 | INFO     | generate_excel_file_gw:analysis:118 - File was uploaded successfully Please wait 0.2 minutes while processing data
+2023-10-19 10:50:31.195 | INFO     | generate_excel_file_gw:analysis:302 - File is created at /home/smartiam/PycharmProjects/Schedule-email-for-gateway/download/gw_analysis_info_2023-10-19.xlsx
+2023-10-19 10:51:46.984 | INFO     | generate_excel_file_gw:analysis:117 - File was uploaded successfully Please wait 0.2 minutes while processing data
+2023-10-19 10:51:48.851 | INFO     | generate_excel_file_gw:analysis:301 - File is created at /home/smartiam/PycharmProjects/Schedule-email-for-gateway/download/gw_analysis_info_2023-10-19.xlsx
+2023-10-19 10:52:37.969 | INFO     | generate_excel_file_gw:analysis:117 - File was uploaded successfully Please wait 26.0 minutes while processing data
+2023-10-19 11:05:36.675 | INFO     | generate_excel_file_gw:analysis:301 - File is created at /home/smartiam/PycharmProjects/Schedule-email-for-gateway/download/gw_analysis_info_2023-10-19.xlsx
+2023-10-19 11:10:44.571 | INFO     | email_service:send_mail:11 - Email writing work in progress..!
+2023-10-19 11:10:48.079 | INFO     | email_service:send_mail:50 - Email sent successfully
