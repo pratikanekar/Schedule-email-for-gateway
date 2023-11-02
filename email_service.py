@@ -14,11 +14,12 @@ def send_mail():
 
     # Recipient email address
     # to_email = 'manjusha.d@smart-iam.com'
-    recipients = ['dheeraj.d@smart-iam.com', 'manjusha.d@smart-iam.com', 'techsupport1@smart-iam.com', 'hitesh.c@smartiam.in', 'punecms@smartiam.in', 'cms@smartiam.in', 'nihar.z@smartiam.in']
+    recipients = ['dheeraj.d@smart-iam.com', 'manjusha.d@smart-iam.com', 'techsupport1@smart-iam.com', 'hitesh.c@smartiam.in', 'punecms@smartiam.in', 'cms@smartiam.in', 'nihar.z@smartiam.in', 'sumittanpure8@gmail.com']
+    # recipients = ['manjusha.d@smart-iam.com']
 
     # Create the email message
     subject = 'All Gateway Analysis Data'
-    message_body = 'Respected Sir/Madam, \n\nI hope this email finds you well. I am writing to inform you that I have successfully completed the analysis of the Gateway data, as requested. I have attached the Excel file containing the results of the analysis to this email for your review and reference. \n\nThis is system generated mail please do not replay..! \n\nThanks and Regards \nPratik Anekar'
+    message_body = 'Respected Sir/Madam, \n\nI hope this email finds you well. I am writing to inform you that I have successfully completed the analysis of the Gateway data and Gateway Historic data, as requested. I have attached the Excel file containing the results of the analysis to this email for your review and reference. \n\nThis is system generated mail please do not replay..! \n\nThanks and Regards \nPratik Anekar'
     message = MIMEMultipart()
     message['From'] = gmail_user
     message['To'] = ', '.join(recipients)  # Join recipients with a comma and space
@@ -28,13 +29,15 @@ def send_mail():
 
     # Attach an Excel file (change the filename and path to your file)
     now = datetime.now().strftime("%Y-%m-%d")
-    file_path = f"/home/smartiam/PycharmProjects/Schedule-email-for-gateway/download/gw_analysis_info_{now}.xlsx"
-    with open(file_path, 'rb') as attachment:
-        part = MIMEApplication(attachment.read(), Name=f'gw_analysis_info_{now}.xlsx')
-
-    # Add the Excel file as an attachment
-    part['Content-Disposition'] = f'attachment; filename="gw_analysis_info_{now}.xlsx"'
-    message.attach(part)
+    file_paths = [f"/home/smartiam/PycharmProjects/Schedule-email-for-gateway/download/gw_analysis_info_{now}.xlsx", f"/home/smartiam/PycharmProjects/Schedule-email-for-gateway/historic_report_download/historic_analysis_report_gw_{now}.xlsx"]
+    for file_path in file_paths:
+        # Get the file name and extension
+        file_name = file_path.split("/")[-1]
+        with open(file_path, 'rb') as attachment:
+            part = MIMEApplication(attachment.read(), Name=file_name)
+            # Add the file as an attachment
+        part['Content-Disposition'] = f'attachment; filename="{file_name}"'
+        message.attach(part)
 
     try:
         context = ssl.create_default_context()

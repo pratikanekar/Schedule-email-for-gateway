@@ -6,103 +6,77 @@ from openpyxl.styles import Font, PatternFill
 from requests import exceptions, get, post
 from datetime import datetime
 
-analysis_file_name = "gw_analysis_info"
+historic_file_name = "historic_analysis_report_gw"
 now = datetime.now().strftime("%Y-%m-%d")
-analysis_header_csv = ["ip", "port", "ping_status", "panel_name", "panel_number", "temp_db_count", "cpu_usage",
-                       "disk_usage", "memory_usage", "gateway_uptime",
-                       "process_uptime", "gateway_version", 'current_first_date', 'current_last_date',
-                       'current_cloud_date', 'energy_first_date', 'energy_last_date', 'energy_cloud_date',
-                       'event_first_date', 'event_last_date', 'event_cloud_date', 'frequency_first_date',
-                       'frequency_last_date', 'frequency_cloud_date', 'misc_first_date', 'misc_last_date',
-                       'misc_cloud_date', 'pcmcount_first_date', 'pcmcount_last_date', 'pcmcount_cloud_date',
-                       'power_first_date', 'power_last_date', 'power_cloud_date', 'temperature_first_date',
-                       'temperature_last_date', 'temperature_cloud_date', 'voltage_first_date', 'voltage_last_date',
-                       'voltage_cloud_date', 'acmode_first_date', 'acmode_last_date', 'acmode_cloud_date',
-                       'acspeed_first_date', 'acspeed_last_date', 'acspeed_cloud_date', 'acstate_first_date',
-                       'acstate_last_date', 'acstate_cloud_date', 'event_first_date', 'event_last_date',
-                       'event_cloud_date', 'humidity_first_date', 'humidity_last_date', 'humidity_cloud_date',
-                       'acswing_first_date', 'acswing_last_date', 'acswing_cloud_date', 'dust_first_date',
-                       'dust_last_date', 'dust_cloud_date', 'error_first_date', 'error_last_date', 'error_cloud_date',
-                       'pm10_first_date', 'pm10_last_date', 'pm10_cloud_date', 'pm1p0_first_date', 'pm1p0_last_date',
-                       'pm1p0_cloud_date', 'pm2p5_first_date', 'pm2p5_last_date', 'pm2p5_cloud_date',
-                       'speed_first_date', 'speed_last_date', 'speed_cloud_date']
+analysis_header_csv = ["ip", "port", "ping_status", "panel_name", "panel_number", "total_devices", "online_devices",
+                       "local_db_count", "temp_db_count",
+                       "last_HB_cloud_date", "last_DATA_cloud_date", "cpu_usage", "disk_usage", "memory_usage",
+                       "gateway_uptime",
+                       "process_uptime",
+                       "gateway_version"]
 
 
-def find_measuremt_dates(ip, panel_number):
-    analysis_measuremts = ["current", "energy", "event", "frequency", "misc", "pcmcount", "power", "temperature",
-                           "voltage",
-                           "acmode", "acspeed", "acstate", "event", "humidity", "acswing", "dust", "error", "pm10",
-                           "pm1p0",
-                           "pm2p5", "speed"]
-    from influxdb import InfluxDBClient
-    import influxdb_client
-
-    # Create an InfluxDB client
-    client = InfluxDBClient(host=ip, port=8086, database='temp_data', username='admin',
-                            password='admin123', timeout=2)
-
-    influx2_client = influxdb_client.InfluxDBClient(
-        url="http://192.168.1.11:8087",
-        username="root",
-        password="rootrootroot",
-        token="FWpBQQIAPlK9ZCWBhmzblkCsnGk87_FcwmY7-df8vF9eVdoNyscCkOA5UsRfZNqgx62rzW05v4TdbSmG3vyMFw==",
-        org="iam"
-    )
-
+def find_cloud_dates(panel_number):
     mes_dict = {}
     try:
-        if client.ping():
-            for mes in analysis_measuremts:
-                query = f'SELECT * FROM {mes} ORDER BY time ASC LIMIT 1'
-                result = client.query(query)
-                if len(result.raw['series']) == 0:
-                    mes_dict.update({f"{mes}_first_date": 'Not Available'})
-                    mes_dict.update({f"{mes}_last_date": 'Not Available'})
-                else:
-                    for point in result.get_points():
-                        time = point['time'].replace('T', ' ').replace('Z', '')
-                        mes_dict.update({f"{mes}_first_date": time})
-                        # print(f"{mes}-First-Time:", time)
-                    query1 = f'SELECT * FROM {mes} ORDER BY time DESC LIMIT 1'
-                    result1 = client.query(query1)
-                    for point in result1.get_points():
-                        time = point['time'].replace('T', ' ').replace('Z', '')
-                        mes_dict.update({f"{mes}_last_date": time})
-                        # print(f"{mes}-Last-Time:", time)
-                cloud_query = f'''
-                            from(bucket: "data")
-                            |> range(start: -45d, stop: now())
-                            |> filter(fn: (r) => r["_measurement"] == "{mes}")
-                            |> filter(fn: (r) => r["panel_no"] == "{panel_number}")
-                            |> group(columns: ["panel_no"])
-                            |> aggregateWindow(every: 60m, fn: last, createEmpty: false)
-                            |> last()
-                            |> keep(columns: ["_time"])
-                        '''
-                query_api = influx2_client.query_api()
-                cloud_result = query_api.query(cloud_query)
-                if len(cloud_result) == 0:
-                    mes_dict.update({f"{mes}_cloud_date": 'Not Available'})
-                else:
-                    from datetime import timedelta
-                    for table in cloud_result:
-                        for record in table.records:
-                            time = str(record.values['_time'] + timedelta(minutes=330))
-                            mes_dict.update({f"{mes}_cloud_date": time})
-            influx2_client.close()
-            client.close()
-            return mes_dict
+        import influxdb_client
+        import pandas as pd
+        influx2_client = influxdb_client.InfluxDBClient(
+            url="http://192.168.1.11:8087",
+            username="root",
+            password="rootrootroot",
+            token="FWpBQQIAPlK9ZCWBhmzblkCsnGk87_FcwmY7-df8vF9eVdoNyscCkOA5UsRfZNqgx62rzW05v4TdbSmG3vyMFw==",
+            org="iam"
+        )
+        hb_cloud_query = f'''
+                    from(bucket: "data")
+                    |> range(start: -90d, stop: now())
+                    |> filter(fn: (r) => r["a_panel_number"] == "{panel_number}")
+                    |> filter(fn: (r) => r["_measurement"] == "sys_info")
+                    |> timeShift(duration: 330m, columns: ["_start", "_stop", "_time"])
+                    |> aggregateWindow(every: 60m, fn: last, createEmpty: false)
+                    |> filter(fn: (r) => r._field == "core_voltage")
+                    |> last()
+                    |> keep(columns: ["_time"])
+                '''
+        query_api = influx2_client.query_api()
+        hb_cloud_result = query_api.query(hb_cloud_query)
+        if len(hb_cloud_result) == 0:
+            mes_dict.update({f"last_HB_cloud_date": 'Not Available'})
         else:
-            pass
+            for table in hb_cloud_result:
+                for record in table.records:
+                    time = str(record.values['_time'])
+                    mes_dict.update({f"last_HB_cloud_date": time})
+        result_list = []
+        data_cloud_query = f'''
+                            from(bucket: "data")
+                            |> range(start: -90d, stop: now())
+                            |> filter(fn: (r) => r["panel_no"] == "{panel_number}")
+                            |> timeShift(duration: 330m, columns: ["_start", "_stop", "_time"])
+                            |> last()
+                        '''
+        query_api = influx2_client.query_api()
+        data_cloud_result = query_api.query(data_cloud_query)
+        if len(data_cloud_result) == 0:
+            mes_dict.update({f"last_DATA_cloud_date": 'Not Available'})
+        else:
+            for table in data_cloud_result:
+                for record in table.records:
+                    result_list.append(record.values)
+            data_frame = pd.DataFrame(result_list)
+            pd.set_option('display.max_columns', None)
+            time = str(data_frame.loc[:, '_time'].max())
+            mes_dict.update({f"last_DATA_cloud_date": time})
+        influx2_client.close()
+        return mes_dict
     except Exception as e:
-        for mes in analysis_measuremts:
-            mes_dict.update({f"{mes}_first_date": 'Not Available'})
-            mes_dict.update({f"{mes}_last_date": 'Not Available'})
-            mes_dict.update({f"{mes}_cloud_date": 'Not Available'})
+        mes_dict.update({f"last_DATA_cloud_date": 'Not Available'})
+        mes_dict.update({f"last_HB_cloud_date": 'Not Available'})
         return mes_dict
 
 
-def analysis():
+def historic_analysis():
     try:
         temp_data = []
         file_path = f'/home/smartiam/PycharmProjects/Schedule-email-for-gateway/upload/all_gw_ip_list.csv'
@@ -115,7 +89,7 @@ def analysis():
             for row in csv_reader:
                 record_count += 1
         logger.info(
-            f"File was uploaded successfully Please wait {round((record_count * 12) / 60, 2)} minutes while processing data")
+            f"File was uploaded successfully Please wait approximately {round((record_count * 5) / 60, 2)} minutes while processing historic data")
         with open(file_path, mode='r') as file:
             reader = csv.DictReader(file)
             for lines in reader:
@@ -124,13 +98,15 @@ def analysis():
                 port = lines['port']
                 panel_name = lines['panel_name']
                 panel_number = lines['panel_number']
-                cpu_usage = "Not Available"
-                disk_usage = "Not Available"
-                memory_usage = "Not Available"
-                gw_uptime = "Not Available"
-                gw_process_uptime = "Not Available"
-                gw_version = "Not Available"
-                # local_count = 0
+                cpu_usage = "-"
+                disk_usage = "-"
+                memory_usage = "-"
+                gw_uptime = "-"
+                gw_process_uptime = "-"
+                gw_version = "-"
+                total_dev = 0
+                online_dev = 0
+                local_count = 0
                 temp_count = 0
                 ip_port = f"{ip}:{port}"
                 try:
@@ -139,9 +115,20 @@ def analysis():
                     # Here we check ping status
                     if ping_data.status_code == 200:
                         get_gw_details = get(f'http://{ip_port}/gateway_detail')
+                        # Here we get gw_details for panel info
                         if get_gw_details.status_code == 200:
                             panel_number = get_gw_details.json().get('a_panel_no')
                             panel_name = get_gw_details.json().get('panel_name')
+                        else:
+                            pass
+                        get_status_code_details = get(f'http://{ip_port}/status_codes')
+                        if get_status_code_details.status_code == 200:
+                            total_dev = len(get_status_code_details.json().get('devices'))
+                            device_list = get_status_code_details.json().get('devices')
+                            for key, value in device_list.items():
+                                current_status = value['current']
+                                if int(current_status) < 2000:
+                                    online_dev += 1
                         else:
                             pass
                         get_gw_status_details = get(f'http://{ip_port}/gateway_status/main_status')
@@ -160,16 +147,17 @@ def analysis():
                             # Here we get temp_db txn count
                             if get_data.status_code == 200:
                                 json_list = get_data.json()
-                                # local_count = sum(json_list['data'].values())
+                                local_count = sum(json_list['data'].values())
                                 rule_code = json_list['temp_data']['rule_code']
                                 if rule_code != 0:
                                     temp_count = sum(json_list['temp_data'].values()) - rule_code
 
-                            final_mes_dict = find_measuremt_dates(ip, panel_number)
+                            final_mes_dict = find_cloud_dates(panel_number)
                             temp_dict.update(
                                 {"ip": ip, "port": port, "panel_name": panel_name, "panel_number": panel_number,
-                                 "temp_db_count": temp_count, "cpu_usage": cpu_usage, "disk_usage": disk_usage,
-                                 "memory_usage": memory_usage, "gateway_uptime": gw_uptime,
+                                 "total_devices": total_dev, "online_devices": online_dev,
+                                 "local_db_count": local_count, "temp_db_count": temp_count, "cpu_usage": cpu_usage,
+                                 "disk_usage": disk_usage, "memory_usage": memory_usage, "gateway_uptime": gw_uptime,
                                  "process_uptime": gw_process_uptime, "ping_status": "True",
                                  "gateway_version": gw_version})
                             temp_dict.update(final_mes_dict)
@@ -178,25 +166,36 @@ def analysis():
                         else:
                             pass
                     else:
-                        pass
+                        final_mes_dict = find_cloud_dates(panel_number)
+                        temp_dict.update(
+                            {"ip": ip, "port": port, "panel_name": panel_name, "panel_number": panel_number,
+                             "total_devices": total_dev, "online_devices": online_dev,
+                             "local_db_count": local_count, "temp_db_count": temp_count, "cpu_usage": cpu_usage,
+                             "disk_usage": disk_usage, "memory_usage": memory_usage, "gateway_uptime": gw_uptime,
+                             "process_uptime": gw_process_uptime, "ping_status": "True",
+                             "gateway_version": gw_version})
+                        temp_dict.update(final_mes_dict)
+                        temp_data.append(temp_dict)
                 except exceptions.ConnectionError or exceptions.ConnectTimeout as e:
-                    final_mes_dict = find_measuremt_dates(ip, panel_number)
+                    final_mes_dict = find_cloud_dates(panel_number)
                     temp_dict.update(
                         {"ip": ip, "port": port, "panel_name": panel_name, "panel_number": panel_number,
-                         "temp_db_count": temp_count, "cpu_usage": cpu_usage, "disk_usage": disk_usage,
-                         "memory_usage": memory_usage, "gateway_uptime": gw_uptime,
-                         "process_uptime": gw_process_uptime, "ping_status": "False",
+                         "total_devices": total_dev, "online_devices": online_dev,
+                         "local_db_count": local_count, "temp_db_count": temp_count, "cpu_usage": cpu_usage,
+                         "disk_usage": disk_usage, "memory_usage": memory_usage, "gateway_uptime": gw_uptime,
+                         "process_uptime": gw_process_uptime, "ping_status": "True",
                          "gateway_version": gw_version})
                     temp_dict.update(final_mes_dict)
                     temp_data.append(temp_dict)
                 except KeyError as r_code:
                     # print(r_code)
                     temp_count = sum(json_list['temp_data'].values())
-                    final_mes_dict = find_measuremt_dates(ip, panel_number)
+                    final_mes_dict = find_cloud_dates(panel_number)
                     temp_dict.update(
                         {"ip": ip, "port": port, "panel_name": panel_name, "panel_number": panel_number,
-                         "temp_db_count": temp_count, "cpu_usage": cpu_usage, "disk_usage": disk_usage,
-                         "memory_usage": memory_usage, "gateway_uptime": gw_uptime,
+                         "total_devices": total_dev, "online_devices": online_dev,
+                         "local_db_count": local_count, "temp_db_count": temp_count, "cpu_usage": cpu_usage,
+                         "disk_usage": disk_usage, "memory_usage": memory_usage, "gateway_uptime": gw_uptime,
                          "process_uptime": gw_process_uptime, "ping_status": "True",
                          "gateway_version": gw_version})
                     temp_dict.update(final_mes_dict)
@@ -204,12 +203,13 @@ def analysis():
 
                 except Exception as e:
                     # print(e)
-                    final_mes_dict = find_measuremt_dates(ip, panel_number)
+                    final_mes_dict = find_cloud_dates(panel_number)
                     temp_dict.update(
                         {"ip": ip, "port": port, "panel_name": panel_name, "panel_number": panel_number,
-                         "temp_db_count": temp_count, "cpu_usage": cpu_usage, "disk_usage": disk_usage,
-                         "memory_usage": memory_usage, "gateway_uptime": gw_uptime,
-                         "process_uptime": gw_process_uptime, "ping_status": "False",
+                         "total_devices": total_dev, "online_devices": online_dev,
+                         "local_db_count": local_count, "temp_db_count": temp_count, "cpu_usage": cpu_usage,
+                         "disk_usage": disk_usage, "memory_usage": memory_usage, "gateway_uptime": gw_uptime,
+                         "process_uptime": gw_process_uptime, "ping_status": "True",
                          "gateway_version": gw_version})
                     temp_dict.update(final_mes_dict)
                     temp_data.append(temp_dict)
@@ -236,6 +236,7 @@ def analysis():
             # Write data rows to the worksheet
             for row_num, row_data in enumerate(temp_data, 2):
                 color_flag = False
+                row_color_flag = False
                 for col_num, header in enumerate(analysis_header_csv, 1):
                     cell = ws.cell(row=row_num, column=col_num, value=row_data.get(header, ''))
 
@@ -253,6 +254,9 @@ def analysis():
                             cloud_date = parse(cloud_date_str)
                             # Calculate the difference in days
                             days_difference = (today - cloud_date).days
+                            if days_difference > 10:
+                                row_color_flag = True
+
                             if 0 < days_difference < 2:
                                 cell.fill = yellow_fill
                                 # Apply red fill to the panel_number cell
@@ -265,6 +269,17 @@ def analysis():
                             if days_difference > 2:
                                 color_flag = True
                                 cell.fill = red_fill
+                        else:
+                            # Set the entire row to red
+                            for col_num in range(1, len(analysis_header_csv) + 2):
+                                cell = ws.cell(row=row_num, column=col_num)
+                                cell.fill = red_fill
+
+                    if row_color_flag:
+                        # Set the entire row to red
+                        for col_num in range(1, len(analysis_header_csv) + 2):
+                            cell = ws.cell(row=row_num, column=col_num)
+                            cell.fill = red_fill
                     if color_flag:
                         # Apply red fill to the panel_number cell
                         panel_number = row_data.get('panel_number', '')
@@ -298,10 +313,11 @@ def analysis():
                 ws.cell(row=start_row, column=2, value=value)
                 start_row += 1  # Move to the next row
 
-            download_path = os.path.join('/home/smartiam/PycharmProjects/Schedule-email-for-gateway', 'download')
+            download_path = os.path.join('/home/smartiam/PycharmProjects/Schedule-email-for-gateway',
+                                         'historic_report_download')
             if not os.path.exists(download_path):
                 os.makedirs(download_path)
-            excel_file_name = f'{analysis_file_name}_{now}.xlsx'
+            excel_file_name = f'{historic_file_name}_{now}.xlsx'
             excel_file_path = os.path.join(download_path, excel_file_name)
             wb.save(excel_file_path)
             logger.info(f"File is created at {excel_file_path}")
